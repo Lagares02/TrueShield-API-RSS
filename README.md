@@ -4,7 +4,7 @@ API de gestion de noticias por medio de RSS
 ## Diagrama ER
 
 <div>
-    <img src="../imgs/Diagrama_ER%20.png" alt="Descripción de la imagen 1" style="width: 500px;">  
+    <img src="../imgs/Diagrama_ER%20.png" alt="Diagrama ER" style="width: 500px;">  
 </div>
 
 Los nombres de las tablas tienen el `main_` antes del nombre del modelo, todo en minuscula, por ejemplo las tablas del diagrama son:

@@ -3,7 +3,9 @@ API de gestion de noticias por medio de RSS
 
 ## Diagrama ER
 
-<img src="D:\Users\Windows 10\Documents\TrueShield\TrueShield-API-RSS\imgs\Diagrama_ER .png" alt="Diagrama ER" />
+<div>
+    <img src="../imgs/Diagrama_ER%20.png" alt="Descripción de la imagen 1" style="width: 500px;">  
+</div>
 
 Los nombres de las tablas tienen el `main_` antes del nombre del modelo, todo en minuscula, por ejemplo las tablas del diagrama son:
 

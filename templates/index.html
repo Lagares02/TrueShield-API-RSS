@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API News</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        #searchTitle {
+            font-size: 2em;
+            text-align: center;
+        }
+        #promptInput {
+            width: 60%;
+            margin: 0 auto;
+            display: block;
+            margin-bottom: 20px;
+        }
+        #validateButton {
+            display: block;
+            margin-left: 10px;
+        }
+        #saveButton {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+        }
+        #NbCButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #enterRSSButton {
+            position: absolute;
+            top: 110px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="searchTitle">Search</h1>
+        {% if num_noticias > 0 %}
+            <div class="row justify-content-center">
+                <div class="col-8 d-flex">
+                    <input type="text" id="promptInput" class="form-control m-2" placeholder="Enter the title of the news">
+                    <button id="validateButton" class="btn btn-primary custom-btn m-2 bt">Validate</button>
+                </div>
+            </div>
+        {% else %}
+            <p>No hay noticias en la base de datos.</p>
+        {% endif %}
+    </div>
+
+
+
+
+
+    <button id="NbCButton" class="btn btn-primary" onclick="location.href='http://127.0.0.1:8001/news_by_category';">News by category</button>
+    <button id="saveButton" class="btn btn-primary">Save news</button>
+    <button id="enterRSSButton" class="btn btn-primary">Enter RSS</button>
+
+    <script>
+        document.getElementById('saveButton').addEventListener('click', function() {
+            fetch('/save_news', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('validateButton').addEventListener('click', function() {
+            var titular_usuario = document.getElementById('promptInput').value;
+            fetch('/validate_prompt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ titular_usuario: titular_usuario })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

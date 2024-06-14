@@ -40,8 +40,6 @@ Imagen.jpg
 -   Abre una terminal y navega al directorio del proyecto.
 -   Crea el entorno:
 
-     py -m venv venv
-
 > python -m venv venv 
 
 - Activa el entorno creado (Para Windows):

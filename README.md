@@ -6,7 +6,7 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 
 ## Diagrama de arquitectura
 
-Imagen.jpg
+<img src="imgs/Diagrama_arq.jpg" alt="Diagrama de arquitectura" />
 
 ## Diagrama de clases
 

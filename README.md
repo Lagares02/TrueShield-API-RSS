@@ -8,10 +8,6 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 
 <img src="imgs/Diagrama_arq.jpg" alt="Diagrama de arquitectura" />
 
-## Diagrama de clases
-
-Imagen.jpg
-
 ## ¿Cómo está dividida la API?
 
 ### Estructura del proyecto

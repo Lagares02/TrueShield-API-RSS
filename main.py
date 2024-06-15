@@ -23,6 +23,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Declarar el modelo
 Base = declarative_base()
 
+# Crear la tabla si no existe
+Base.metadata.create_all(bind=engine)
+
 class MainNew(Base):
     __tablename__ = 'main_new'
     id = Column(Integer, primary_key=True, index=True)
@@ -51,9 +54,6 @@ class MainMedia(Base):
     logo = Column(String)
     rss_urls = relationship('MainRssUrl', back_populates='media')
     news = relationship('MainNew', backref='media')
-
-# Crear la tabla si no existe
-Base.metadata.create_all(bind=engine)
 
 # Configurar FastAPI
 app = FastAPI()
@@ -112,6 +112,31 @@ def buscar_y_guardar_noticias():
 
     return num_noticias_guardadas
 
+# Función para obtener todas las noticias por categoría
+def get_news_by_category():
+    categories_news = {}
+    db = SessionLocal()
+    for rss_url in db.query(MainRssUrl).all():
+        category = rss_url.category
+        if category not in categories_news:
+            categories_news[category] = []
+
+        media_id = rss_url.media_id
+        news = db.query(MainNew).filter(MainNew.media_id == media_id).all()
+
+        for new in news:
+            new_dict = {
+                "title": new.title,
+                "summary": new.summary,
+                "body": new.body,
+                "publication_date": new.publication_date,
+                "url": new.link_article,
+            }
+            categories_news[category].append(new_dict)
+    
+    db.close()
+    return categories_news
+
 # Ruta para renderizar el index.html
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -137,31 +162,6 @@ async def guardar_noticias():
     num_noticias_guardadas = buscar_y_guardar_noticias()
     message = f"{num_noticias_guardadas} noticias guardadas correctamente"
     return {"message": message, "num_noticias": num_noticias_guardadas}
-
-# Función para obtener todas las noticias por categoría
-def get_news_by_category():
-    categories_news = {}
-    db = SessionLocal()
-    for rss_url in db.query(MainRssUrl).all():
-        category = rss_url.category
-        if category not in categories_news:
-            categories_news[category] = []
-
-        media_id = rss_url.media_id
-        news = db.query(MainNew).filter(MainNew.media_id == media_id).all()
-
-        for new in news:
-            new_dict = {
-                "title": new.title,
-                "summary": new.summary,
-                "body": new.body,
-                "publication_date": new.publication_date,
-                "url": new.link_article,
-            }
-            categories_news[category].append(new_dict)
-    
-    db.close()
-    return categories_news
 
 # Ruta para obtener todas las noticias por categoría
 @app.get("/news_by_category")

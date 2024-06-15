@@ -25,6 +25,9 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 - `main.py` - Archivo principal de la API donde se incluyen las rutas.
 - `requirements.txt` - Archivo con las librerías y paquetes necesarios.
 
+> [!TIP]
+> Mantener una estructura modular del proyecto facilita el mantenimiento y la escalabilidad del mismo.
+
 ### Componentes
 
 `main.py`: Contiene la configuración principal de **FastAPI** y la inclusión de las rutas desde el módulo `routes`.
@@ -41,6 +44,9 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 -   `/save_news`: Guarda las noticias obtenidas de los RSS en la base de datos (más específicamente en la tabla News).
 -   `/news_by_category`: Obtiene todas las noticias clasificadas por categoría y las devuelve en formato JSON.
 
+> [!NOTE]
+> Asegúrate de que el archivo `.env` esté correctamente configurado para la conexión a la base de datos.
+
 `services/news.py`: Contiene todas las funciones de lógica
 
 `templates/index.html`: Proporciona la interfaz de usuario para buscar y validar titulares de noticias, así como para guardar nuevas noticias.
@@ -48,6 +54,9 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 ## Ejecutemos la API
 
 ### Iniciamos un entorno virtual (Opcional)
+
+> [!TIP]
+> Usar un entorno virtual evita conflictos entre las dependencias de distintos proyectos.
 
 -   Abre una terminal y navega al directorio del proyecto.
 -   Crea el entorno:
@@ -72,6 +81,9 @@ pip install -r requirements.txt
 
 ### Clonar y ejecutar
 
+> [!IMPORTANT]
+> No olvides configurar tus variables de entorno en el archivo `.env`.
+
 - Clonamos el repo:
 
 ```
@@ -93,5 +105,8 @@ DB_NAME = tu_nombre_de_base_de_datos
 ```
 py main.py
 ```
+
+> [!WARNING]
+> Asegúrate de que el puerto `8001` esté libre para evitar conflictos con otras aplicaciones.
 
 - Abre tu navegador y navega a `http://127.0.0.1:8001` para ver la interfaz de usuario.

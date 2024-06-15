@@ -1,6 +1,7 @@
 fastapi
 uvicorn
-feedparser
 sqlalchemy
-psycopg2
+psycopg2-binary
+python-dotenv
+feedparser
 jinja2

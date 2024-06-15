@@ -12,14 +12,17 @@ def buscar_y_guardar_noticias(db: Session):
         print("num noticias: de ", rss_url.rss, " ", len(feed))
         for entry in feed.entries:
             try:
+                # Verificar si la longitud del título es mayor a 200 caracteres y truncar si es necesario
+                title = entry.title if len(entry.title) <= 200 else entry.title[:200]
+
                 # Verificar si la noticia ya existe en la base de datos
-                existing_news = db.query(MainNew).filter_by(title=entry.title).first()
+                existing_news = db.query(MainNew).filter_by(title=title).first()
                 if existing_news:
                     continue
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
-                    title=entry.title,
+                    title=title,
                     summary=entry.summary,
                     link_article=entry.link,
                     publication_date=datetime.now(),
@@ -40,13 +43,12 @@ def buscar_y_guardar_noticias(db: Session):
                 db.add(new_news)
                 num_noticias_guardadas += 1
 
-            except AttributeError or KeyError:
+            except (AttributeError, KeyError):
                 print("faltó algo")
                 continue
 
     # Hacer commit fuera del bucle para mejorar el rendimiento
     db.commit()
-
     return num_noticias_guardadas
 
 def get_news_by_category(db: Session):

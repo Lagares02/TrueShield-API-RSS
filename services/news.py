@@ -44,7 +44,7 @@ def buscar_y_guardar_noticias(db: Session):
                 num_noticias_guardadas += 1
 
             except (AttributeError, KeyError):
-                print("faltó algo")
+                print("Faltó algo")
                 continue
 
     # Hacer commit fuera del bucle para mejorar el rendimiento

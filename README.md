@@ -44,9 +44,6 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 -   `/save_news`: Guarda las noticias obtenidas de los RSS en la base de datos (más específicamente en la tabla News).
 -   `/news_by_category`: Obtiene todas las noticias clasificadas por categoría y las devuelve en formato JSON.
 
-> [!NOTE]
-> Asegúrate de que el archivo `.env` esté correctamente configurado para la conexión a la base de datos.
-
 `services/news.py`: Contiene todas las funciones de lógica
 
 `templates/index.html`: Proporciona la interfaz de usuario para buscar y validar titulares de noticias, así como para guardar nuevas noticias.
@@ -81,15 +78,15 @@ pip install -r requirements.txt
 
 ### Clonar y ejecutar
 
-> [!IMPORTANT]
-> No olvides configurar tus variables de entorno en el archivo `.env`.
-
 - Clonamos el repo:
 
 ```
 git clone https://github.com/Lagares02/TrueShield-API-RSS.git
 cd TrueShield-API-RSS
 ```
+
+> [!IMPORTANT]
+> No olvides configurar tus variables de entorno en el archivo `.env` para una correcta conexión con la base de datos.
 
 - Configura tus variables de entorno para la conexión de la base de datos
 

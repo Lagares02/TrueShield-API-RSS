@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from config.db import get_db
-from services.news import buscar_y_guardar_noticias, get_news_by_category
+from services.news import buscar_y_guardar_noticias, get_news_by_category, contrasting_rss
 from models.models import MainNew
 
 router = APIRouter()

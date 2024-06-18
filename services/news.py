@@ -1,6 +1,7 @@
 import feedparser
 from datetime import datetime
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from models.models import MainNew, MainRssUrl
 
 def buscar_y_guardar_noticias(db: Session):
@@ -72,22 +73,48 @@ def get_news_by_category(db: Session):
             categories_news[category].append(new_dict)
 
     return categories_news
-
-def save_news_to_database(prompt, temporality, main_topic, db: Session):
+    
+def contrasting_rss(db: Session, prompt: str, temporality: str, keywords: list, main_topic: str, subjects: list):
     try:
-        new_news = MainNew(
-            publication_date=temporality,
-            category=main_topic,
-            title=prompt,
-            summary=prompt,
-            body=prompt
+        # List to store matched news
+        matched_news = []
+
+        # Query news from database and filter by similarity to JSON data
+        news_query = db.query(MainNew).filter(
+            MainNew.publication_date == temporality,
+            MainNew.category == main_topic,
+            or_(
+                MainNew.title.ilike(f'%{prompt}%'),
+                MainNew.summary.ilike(f'%{prompt}%'),
+                MainNew.body.ilike(f'%{prompt}%')
+            )
         )
 
-        db.add(new_news)
-        db.commit()
+        for news in news_query:
+            match_score = 0
 
-        return True, "News saved successfully"
-    
+            # Compare location, keywords, subjects with title, summary, and body
+            for keyword in keywords + subjects:
+                if (keyword in news.title.lower() or
+                    keyword in news.summary.lower() or
+                    keyword in news.body.lower()):
+                    match_score += 1
+
+            # Minimum of 3 matches required for the news to be considered
+            if match_score >= 3:
+                matched_news.append({
+                    "id": news.id,
+                    "Page": news.media_id,
+                    "DatePublication": news.publication_date.strftime('%Y-%m-%d'),
+                    "Title": news.title,
+                    "Summary": news.summary,
+                    "BodyText": news.body
+                })
+
+        # Sort matched_news by match_score (descending)
+        matched_news = sorted(matched_news, key=lambda x: x.get("match_score", 0), reverse=True)
+
+        return matched_news
+
     except Exception as e:
-        db.session.rollback()
-        return False, str(e)
+        raise e

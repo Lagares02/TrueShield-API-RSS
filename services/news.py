@@ -72,3 +72,22 @@ def get_news_by_category(db: Session):
             categories_news[category].append(new_dict)
 
     return categories_news
+
+def save_news_to_database(prompt, temporality, main_topic, db: Session):
+    try:
+        new_news = MainNew(
+            publication_date=temporality,
+            category=main_topic,
+            title=prompt,
+            summary=prompt,
+            body=prompt
+        )
+
+        db.add(new_news)
+        db.commit()
+
+        return True, "News saved successfully"
+    
+    except Exception as e:
+        db.session.rollback()
+        return False, str(e)

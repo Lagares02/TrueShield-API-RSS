@@ -108,7 +108,8 @@ def contrasting_rss(db: Session, prompt: str, temporality: str, keywords: list, 
                     "DatePublication": news.publication_date.strftime('%Y-%m-%d'),
                     "Title": news.title,
                     "Summary": news.summary,
-                    "BodyText": news.body
+                    "BodyText": news.body,
+                    "TrueLevel": 0.6 # Nivel de veracidad establecido (de 0.0 hasta 1.0)
                 })
 
         # Sort matched_news by match_score (descending)

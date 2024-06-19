@@ -74,7 +74,7 @@ def get_news_by_category(db: Session):
 
     return categories_news
     
-def contrasting_rss(db: Session, prompt: str, temporality: str, keywords: list, main_topic: str, subjects: list):
+def contrasting_rss(db: Session, prompt: str, temporality: str, location: str, keywords: list, main_topic: str, subjects: list):
     try:
         # List to store matched news
         matched_news = []

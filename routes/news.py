@@ -47,7 +47,9 @@ async def contrasting_rss(data: dict, db: Session = Depends(get_db)):
         main_topic = data.get("main_topic")
         subjects = data.get("subjects")
 
-        matched_news = contrasting_rss(db, prompt, temporality, location, keywords, main_topic, subjects)
+        matched_news = contrasting_rss(
+            db, prompt, temporality, location, keywords, main_topic, subjects
+        )
 
         return {"news": matched_news}
 

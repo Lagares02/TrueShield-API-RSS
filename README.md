@@ -43,6 +43,7 @@ Esta API permite la gestión y consulta de noticias a través de diferentes cate
 -   `/validate_prompt`: Valida si un titular dado existe en la base de datos.
 -   `/save_news`: Guarda las noticias obtenidas de los RSS en la base de datos (más específicamente en la tabla News).
 -   `/news_by_category`: Obtiene todas las noticias clasificadas por categoría y las devuelve en formato JSON.
+-	`/contrasting_rss`: Realiza una búsqueda de noticias similares basada en un prompt que se encuentra en una estructura JSON y devuelve las más relevantes.
 
 `services/news.py`: Contiene todas las funciones de lógica
 

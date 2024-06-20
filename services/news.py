@@ -74,30 +74,25 @@ def get_news_by_category(db: Session):
 
     return categories_news
     
-def contrasting_rss(db: Session, prompt: str, temporality: str, location: str, keywords: list, main_topic: str, subjects: list):
+def contrasting_rss(db: Session, keywords: list, subjects: list):
     try:
         # List to store matched news
         matched_news = []
 
-        # Query news from database and filter by similarity to JSON data
-        news_query = db.query(MainNew).filter(
-            MainNew.publication_date == temporality,
-            MainNew.category == main_topic,
-            or_(
-                MainNew.title.ilike(f'%{prompt}%'),
-                MainNew.summary.ilike(f'%{prompt}%'),
-                MainNew.body.ilike(f'%{prompt}%')
-            )
-        )
+        # Query all news from database
+        news_query = db.query(MainNew)
 
         for news in news_query:
             match_score = 0
 
-            # Compare location, keywords, subjects with title, summary, and body
+            # Split title and summary into words
+            title_words = news.title.lower().split()
+            summary_words = news.summary.lower().split()
+
+            # Compare keywords and subjects with title and summary
             for keyword in keywords + subjects:
-                if (keyword in news.title.lower() or
-                    keyword in news.summary.lower() or
-                    keyword in news.body.lower()):
+                if (keyword in title_words or
+                    keyword in summary_words):
                     match_score += 1
 
             # Minimum of 3 matches required for the news to be considered

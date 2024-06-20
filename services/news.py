@@ -1,7 +1,6 @@
 import feedparser
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 from models.models import MainNew, MainRssUrl
 
 def buscar_y_guardar_noticias(db: Session):

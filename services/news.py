@@ -103,7 +103,7 @@ def contrasting_rss(db: Session, prompt: str, temporality: str, location: str, k
             # Minimum of 3 matches required for the news to be considered
             if match_score >= 3:
                 matched_news.append({
-                    "id": news.id,
+                    "Id": news.id,
                     "Page": news.media_id,
                     "DatePublication": news.publication_date.strftime('%Y-%m-%d'),
                     "Title": news.title,

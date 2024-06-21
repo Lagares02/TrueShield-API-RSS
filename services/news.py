@@ -1,7 +1,7 @@
 import feedparser
 from datetime import datetime
-from sqlalchemy.orm import Session
-from models.models import MainNew, MainRssUrl
+from sqlalchemy.orm import Session, selectinload
+from models.models import MainNew, MainRssUrl, MainMedia
 
 def buscar_y_guardar_noticias(db: Session):
     num_noticias_guardadas = 0
@@ -78,8 +78,10 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
         # List to store matched news
         matched_news = []
 
-        # Query all news from database
-        news_query = db.query(MainNew)
+        # Query all news from database with related media information
+        news_query = db.query(MainNew).options(
+            selectinload(MainNew.media)
+        )
 
         for news in news_query:
             match_score = 0
@@ -98,7 +100,7 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
             if match_score >= 1:
                 matched_news.append({
                     "Id": news.id,
-                    "Page": news.media_id,
+                    "Page": news.media.name,
                     "DatePublication": news.publication_date.strftime('%Y-%m-%d'),
                     "Title": news.title,
                     "Summary": news.summary,

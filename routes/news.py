@@ -45,11 +45,7 @@ async def contrasting(data: dict, db: Session = Depends(get_db)):
 
         matched_news = contrasting_rss(db, keywords, subjects)
 
-        return {
-            "keywords": keywords,
-            "subjects": subjects,
-            "News": matched_news
-        }
+        return {"News": matched_news}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

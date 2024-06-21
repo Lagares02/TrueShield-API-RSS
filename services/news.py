@@ -73,7 +73,7 @@ def get_news_by_category(db: Session):
 
     return categories_news
     
-def contrasting_rss(db: Session, keywords: list, subjects: list):
+def contrasting_rss(db: Session, keywords = [], subjects = []):
     try:
         # List to store matched news
         matched_news = []
@@ -95,7 +95,7 @@ def contrasting_rss(db: Session, keywords: list, subjects: list):
                     match_score += 1
 
             # Minimum of 3 matches required for the news to be considered
-            if match_score >= 3:
+            if match_score >= 1:
                 matched_news.append({
                     "Id": news.id,
                     "Page": news.media_id,
@@ -108,6 +108,8 @@ def contrasting_rss(db: Session, keywords: list, subjects: list):
 
         # Sort matched_news by match_score (descending)
         matched_news = sorted(matched_news, key=lambda x: x.get("match_score", 0), reverse=True)
+        
+        print("News: ", matched_news)
 
         return matched_news
 

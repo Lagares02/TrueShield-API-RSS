@@ -37,15 +37,19 @@ async def news_by_category(db: Session = Depends(get_db)):
     categories_news = get_news_by_category(db)
     return categories_news
 
-@router.post("/contrasting_rss", response_model=dict)
-async def contrasting_rss(data: dict, db: Session = Depends(get_db)):
+@router.post("/contrasting", response_model=dict)
+async def contrasting(data: dict, db: Session = Depends(get_db)):
     try:
         keywords = data.get("keywords")
         subjects = data.get("subjects")
 
         matched_news = contrasting_rss(db, keywords, subjects)
 
-        return {"news": matched_news}
+        return {
+            "keywords": keywords,
+            "subjects": subjects,
+            "News": matched_news
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

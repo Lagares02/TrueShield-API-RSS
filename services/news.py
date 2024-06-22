@@ -27,6 +27,7 @@ def buscar_y_guardar_noticias(db: Session):
                     link_article=entry.link,
                     publication_date=datetime.now(),
                     media_id=rss_url.media_id,
+                    authors=entry.author
                 )
 
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)
@@ -68,6 +69,7 @@ def get_news_by_category(db: Session):
                 "body": new.body,
                 "publication_date": new.publication_date,
                 "url": new.link_article,
+                "authors": new.authors
             }
             categories_news[category].append(new_dict)
 
@@ -105,6 +107,7 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     "Title": news.title,
                     "Summary": news.summary,
                     "BodyText": news.body,
+                    "Authors": news.authors,
                     "TrueLevel": 0.6 # Nivel de veracidad establecido (de 0.0 hasta 1.0)
                 })
 

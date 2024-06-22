@@ -21,34 +21,29 @@ def buscar_y_guardar_noticias(db: Session):
                     continue
                 
                 # Obtener summary si está disponible
-                summary = (
-                    entry.summary if hasattr(entry, 'summary') else
-                    entry.description if hasattr(entry, 'description') else
-                    "No hay resumen disponible."
-                )
+                summary = (getattr(entry, 'description', None) or
+                           getattr(entry, 'summary', None) or
+                           "")
                 
-                # Obtener autor si está disponible
-                authors = entry.author if hasattr(entry, 'author') else "Desconocido"
+                # Obtener body si está disponible
+                body = (getattr(entry, 'content', None) or
+                        getattr(entry, 'body', None) or
+                        "")
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
                     title=title,
                     summary=summary,
+                    body=body,
                     link_article=entry.link,
                     publication_date=datetime.now(),
                     media_id=rss_url.media_id,
-                    authors=authors
+                    authors=entry.authors
                 )
 
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)
                 if hasattr(feed, 'updated_parsed'):
                     new_news.publication_date = datetime.fromtimestamp(feed.updated_parsed)
-
-                # Verificar si la noticia tiene el cuerpo (body)
-                if hasattr(entry, 'body') and entry.body:
-                    new_news.body = entry.body
-                else:
-                    new_news.body = "No hay cuerpo disponible."
 
                 # Guardar la nueva noticia en la base de datos
                 db.add(new_news)

@@ -13,7 +13,7 @@ def buscar_y_guardar_noticias(db: Session):
         print("num noticias: ", len(feed), " de ", rss_url.rss)
         for entry in feed.entries:
             try:
-                # Verificar si la longitud del título es mayor a 200 caracteres y truncar si es necesario
+                # Verificar si la longitud es mayor a 200 caracteres y truncar si es necesario
                 title = entry.title if len(entry.title) <= 200 else entry.title[:200]
 
                 # Verificar si la noticia ya existe en la base de datos
@@ -35,6 +35,11 @@ def buscar_y_guardar_noticias(db: Session):
                 authors = (getattr(entry, 'author', None) or
                            getattr(entry, 'creator', None) or
                            "")
+                
+                # Verificar si la longitud es mayor a 200 caracteres y truncar si es necesario
+                #summary = summary if len(summary) <= 200 else summary[:200]
+                #body = body if len(body) <= 200 else body[:200]
+                authors = authors if len(authors) <= 200 else authors[:200]
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
@@ -47,10 +52,6 @@ def buscar_y_guardar_noticias(db: Session):
                     authors=authors
                 )
 
-                # Verificar si el feed tiene la fecha de actualización (updated_parsed)
-                #if hasattr(feed, 'updated_parsed'):
-                #   new_news.publication_date = datetime.fromtimestamp(feed.updated_parsed)
-                
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)
                 if hasattr(entry, 'updated_parsed'):
                     new_news.publication_date = datetime.fromtimestamp(time.mktime(entry.updated_parsed))

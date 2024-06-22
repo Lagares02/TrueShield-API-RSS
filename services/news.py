@@ -116,8 +116,8 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     keyword in summary_words):
                     match_score += 1
 
-            # Minimum of 3 matches required for the news to be considered
-            if match_score >= 1:
+            # Minimum of 2 matches required for the news to be considered
+            if match_score >= 2:
                 matched_news.append({
                     "Id": news.id,
                     "Page": news.media.name,

@@ -105,9 +105,13 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
             # Split title and summary into words
             title_words = news.title.lower().split()
             summary_words = news.summary.lower().split()
+            
+            # keywords and subjects lower
+            keywords_lower = list(map(lambda x: x.lower(), keywords))
+            subjects_lower = list(map(lambda x: x.lower(), subjects))
 
             # Compare keywords and subjects with title and summary
-            for keyword in keywords + subjects:
+            for keyword in keywords_lower + subjects_lower:
                 if (keyword in title_words or
                     keyword in summary_words):
                     match_score += 1

@@ -29,6 +29,11 @@ def buscar_y_guardar_noticias(db: Session):
                 body = (getattr(entry, 'content', None) or
                         getattr(entry, 'body', None) or
                         "")
+                
+                # Obtener autor si está disponible
+                authors = (getattr(entry, 'author', None) or
+                           getattr(entry, 'creator', None) or
+                           "")
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
@@ -38,7 +43,7 @@ def buscar_y_guardar_noticias(db: Session):
                     link_article=entry.link,
                     publication_date=datetime.now(),
                     media_id=rss_url.media_id,
-                    authors=entry.authors
+                    authors=authors
                 )
 
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)

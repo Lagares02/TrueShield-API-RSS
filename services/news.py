@@ -20,13 +20,20 @@ def buscar_y_guardar_noticias(db: Session):
                 if existing_news:
                     continue
                 
+                # Obtener summary si está disponible
+                summary = (
+                    entry.summary if hasattr(entry, 'summary') else
+                    entry.description if hasattr(entry, 'description') else
+                    "No hay resumen disponible."
+                )
+                
                 # Obtener autor si está disponible
-                authors = entry.author if hasattr(entry, 'author') else ""
+                authors = entry.author if hasattr(entry, 'author') else "Desconocido"
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
                     title=title,
-                    summary=entry.summary,
+                    summary=summary,
                     link_article=entry.link,
                     publication_date=datetime.now(),
                     media_id=rss_url.media_id,

@@ -37,8 +37,8 @@ def buscar_y_guardar_noticias(db: Session):
                            "")
                 
                 # Verificar si la longitud es mayor a 200 caracteres y truncar si es necesario
-                #summary = summary if len(summary) <= 200 else summary[:200]
-                #body = body if len(body) <= 200 else body[:200]
+                summary = summary if len(summary) <= 200 else summary[:200]
+                body = body if len(body) <= 200 else body[:200]
                 authors = authors if len(authors) <= 200 else authors[:200]
 
                 # Crear un nuevo registro de noticia

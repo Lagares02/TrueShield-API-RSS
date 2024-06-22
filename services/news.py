@@ -19,6 +19,9 @@ def buscar_y_guardar_noticias(db: Session):
                 existing_news = db.query(MainNew).filter_by(title=title).first()
                 if existing_news:
                     continue
+                
+                # Obtener autor si está disponible
+                authors = entry.author if hasattr(entry, 'author') else ""
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
@@ -27,7 +30,7 @@ def buscar_y_guardar_noticias(db: Session):
                     link_article=entry.link,
                     publication_date=datetime.now(),
                     media_id=rss_url.media_id,
-                    authors=entry.author
+                    authors=authors
                 )
 
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)

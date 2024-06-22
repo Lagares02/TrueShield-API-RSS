@@ -6,11 +6,12 @@ class MainNew(Base):
     __tablename__ = 'main_new'
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    summary = Column(Text)
-    body = Column(Text)
+    summary = Column(Text, nullable=True)
+    body = Column(Text, nullable=True)
     link_article = Column(String, nullable=False)
     publication_date = Column(DateTime, nullable=False)
     media_id = Column(Integer, ForeignKey('main_media.id'))
+    authors = Column(String, nullable=True)
 
 class MainRssUrl(Base):
     __tablename__ = 'main_rss_url'

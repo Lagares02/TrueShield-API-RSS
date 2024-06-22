@@ -1,5 +1,6 @@
 import feedparser
 from datetime import datetime
+import time
 from sqlalchemy.orm import Session, selectinload
 from models.models import MainNew, MainRssUrl
 
@@ -47,8 +48,12 @@ def buscar_y_guardar_noticias(db: Session):
                 )
 
                 # Verificar si el feed tiene la fecha de actualización (updated_parsed)
-                if hasattr(feed, 'updated_parsed'):
-                    new_news.publication_date = datetime.fromtimestamp(feed.updated_parsed)
+                #if hasattr(feed, 'updated_parsed'):
+                #   new_news.publication_date = datetime.fromtimestamp(feed.updated_parsed)
+                
+                # Verificar si el feed tiene la fecha de actualización (updated_parsed)
+                if hasattr(entry, 'updated_parsed'):
+                    new_news.publication_date = datetime.fromtimestamp(time.mktime(entry.updated_parsed))
 
                 # Guardar la nueva noticia en la base de datos
                 db.add(new_news)

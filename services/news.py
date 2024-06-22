@@ -9,7 +9,7 @@ def buscar_y_guardar_noticias(db: Session):
         feed = feedparser.parse(rss_url.rss)
         category = rss_url.category
         print(category)
-        print("num noticias: de ", rss_url.rss, " ", len(feed))
+        print("num noticias: ", len(feed), " de ", rss_url.rss)
         for entry in feed.entries:
             try:
                 # Verificar si la longitud del título es mayor a 200 caracteres y truncar si es necesario

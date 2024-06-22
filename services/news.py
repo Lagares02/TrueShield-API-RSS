@@ -4,6 +4,11 @@ import time
 from sqlalchemy.orm import Session, selectinload
 from models.models import MainNew, MainRssUrl
 
+def truncate_string(value, max_length):
+    if value and len(value) > max_length:
+        return value[:max_length]
+    return value
+
 def buscar_y_guardar_noticias(db: Session):
     num_noticias_guardadas = 0
     for rss_url in db.query(MainRssUrl).all():
@@ -13,14 +18,22 @@ def buscar_y_guardar_noticias(db: Session):
         print("num noticias: ", len(feed), " de ", rss_url.rss)
         for entry in feed.entries:
             try:
+                # Truncate title, summary, body, and authors if they are too long
+                title = truncate_string(entry.title, 200)
+                summary = truncate_string(
+                    getattr(entry, 'description', None) or getattr(entry, 'summary', None) or "", 200)
+                body = truncate_string(getattr(entry, 'content', None) or "", 10000)
+                authors = truncate_string(getattr(entry, 'author', None) or getattr(entry, 'creator', None) or "", 200)
+                
                 # Verificar si la longitud es mayor a 200 caracteres y truncar si es necesario
-                title = entry.title if len(entry.title) <= 200 else entry.title[:200]
+                #title = entry.title if len(entry.title) <= 200 else entry.title[:200]
 
                 # Verificar si la noticia ya existe en la base de datos
                 existing_news = db.query(MainNew).filter_by(title=title).first()
                 if existing_news:
                     continue
                 
+                """
                 # Obtener summary si está disponible
                 summary = (getattr(entry, 'description', None) or
                            getattr(entry, 'summary', None) or
@@ -40,6 +53,7 @@ def buscar_y_guardar_noticias(db: Session):
                 summary = summary if len(summary) <= 200 else summary[:200]
                 body = body if len(body) <= 200 else body[:200]
                 authors = authors if len(authors) <= 200 else authors[:200]
+                """
 
                 # Crear un nuevo registro de noticia
                 new_news = MainNew(
@@ -60,8 +74,8 @@ def buscar_y_guardar_noticias(db: Session):
                 db.add(new_news)
                 num_noticias_guardadas += 1
 
-            except (AttributeError, KeyError):
-                print("Faltó algo")
+            except (AttributeError, KeyError) as e:
+                print(f"Error: {e}")
                 continue
 
     # Hacer commit fuera del bucle para mejorar el rendimiento

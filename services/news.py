@@ -24,7 +24,7 @@ def buscar_y_guardar_noticias(db: Session):
                     title = truncate_string(entry.title, 200)
                     summary = truncate_string(
                         getattr(entry, 'description', None) or getattr(entry, 'summary', None) or "", 200)
-                    body = truncate_string(getattr(entry, 'content', None) or "", 200)
+                    body = truncate_string(getattr(entry, 'body', None) or "", 200)
                     authors = truncate_string(getattr(entry, 'author', None) or getattr(entry, 'creator', None) or "", 200)
                     link = truncate_string(getattr(entry, 'link', None) or "", 200)
 

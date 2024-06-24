@@ -126,7 +126,7 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     "Summary": news.summary,
                     "BodyText": news.body,
                     "Authors": news.authors,
-                    "TrueLevel": 0.60 # Nivel de veracidad establecido (de 0.0 hasta 1.0)
+                    "TrueLevel": 0.60 # Nivel de veracidad establecido (de 0.00 hasta 1.00)
                 })
 
         # Sort matched_news by match_score (descending)

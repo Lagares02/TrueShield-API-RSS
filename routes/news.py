@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from config.db import get_db
 from services.news import buscar_y_guardar_noticias, get_news_by_category, contrasting_rss
 from models.models import MainNew
+import json
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -37,6 +38,7 @@ async def news_by_category(db: Session = Depends(get_db)):
     categories_news = get_news_by_category(db)
     return categories_news
 
+"""
 @router.post("/contrasting", response_model=dict)
 async def contrasting(data: dict, db: Session = Depends(get_db)):
     try:
@@ -49,15 +51,21 @@ async def contrasting(data: dict, db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+"""
 
-@router.websocket("/contrasting_rss")
-async def websocket_endpoint(websocket: WebSocket, data:dict, db: Session = Depends(get_db)):
+@router.websocket("/contrasting")
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.accept()
     print("WebSocket connection established")
     
     try:
-        Keywords = data.get("keywords")
-        Subjects = data.get("subjects")
+        data = await websocket.receive_text()
+        print(f"Texto recibido: {data}")
+        message = json.loads(data)
+        print(f"Message transformado a JSON: {message}")
+        
+        Keywords = message.get("keywords")
+        Subjects = message.get("subjects")
         
         while True:
             

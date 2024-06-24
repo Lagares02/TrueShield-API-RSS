@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, WebSocket
+from fastapi import APIRouter, HTTPException, Depends, Request, WebSocket, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -7,7 +7,11 @@ from services.news import buscar_y_guardar_noticias, get_news_by_category, contr
 from models.models import MainNew
 import json
 
+# Configurar FastAPI
+app = FastAPI()
+
 router = APIRouter()
+
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
@@ -53,7 +57,7 @@ async def contrasting(data: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 """
 
-@router.websocket("/contrasting")
+@app.websocket("/contrasting")
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.accept()
     print("WebSocket connection established")

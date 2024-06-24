@@ -40,10 +40,10 @@ async def news_by_category(db: Session = Depends(get_db)):
 @router.post("/contrasting", response_model=dict)
 async def contrasting(data: dict, db: Session = Depends(get_db)):
     try:
-        keywords = data.get("keywords")
-        subjects = data.get("subjects")
+        Keywords = data.get("keywords")
+        Subjects = data.get("subjects")
 
-        matched_news = contrasting_rss(db, keywords, subjects)
+        matched_news = contrasting_rss(db, Keywords, Subjects)
 
         return {"News": matched_news}
 

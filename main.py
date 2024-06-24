@@ -3,6 +3,7 @@ from config.db import engine, Base
 from routes import news
 from sqlalchemy.orm import Session
 from config.db import get_db
+from services.news import contrasting_rss
 import json
 
 # Crear las tablas en la base de datos

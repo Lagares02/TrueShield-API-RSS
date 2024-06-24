@@ -49,3 +49,23 @@ async def contrasting(data: dict, db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.websocket("/contrasting_rss")
+async def websocket_endpoint(websocket: WebSocket, data:dict, db: Session = Depends(get_db)):
+    await websocket.accept()
+    print("WebSocket connection established")
+    
+    try:
+        Keywords = data.get("keywords")
+        Subjects = data.get("subjects")
+        
+        while True:
+            
+            items = contrasting_rss(db, Keywords, Subjects)
+            
+            return {
+                "item": items
+            }
+        
+    except Exception as e:
+        print(f"Connection error: {e}")

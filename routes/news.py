@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from config.db import get_db
-from services.news import buscar_y_guardar_noticias, get_news_by_category
+from services.news import buscar_y_guardar_noticias, get_news_by_category, contrasting_rss
 from models.models import MainNew
+import json
 
 router = APIRouter()
 
@@ -38,8 +39,8 @@ async def news_by_category(db: Session = Depends(get_db)):
     categories_news = get_news_by_category(db)
     return categories_news
 
-"""
-@router.post("/contrasting", response_model=dict)
+
+@router.post("/contrasting_rss", response_model=dict)
 async def contrasting(data: dict, db: Session = Depends(get_db)):
     try:
         Keywords = data.get("keywords")
@@ -51,4 +52,29 @@ async def contrasting(data: dict, db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-"""
+
+
+@router.websocket("/contrasting")
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
+    await websocket.accept()
+    print("WebSocket connection established")
+    
+    try:
+        data = await websocket.receive_text()
+        print(f"Texto recibido: {data}")
+        message = json.loads(data)
+        print(f"Message transformado a JSON: {message}")
+        
+        Keywords = message.get("keywords")
+        Subjects = message.get("subjects")
+        
+        while True:
+            
+            items = contrasting_rss(db, Keywords, Subjects)
+            
+            return {
+                "item": items
+            }
+        
+    except Exception as e:
+        print(f"Connection error: {e}")

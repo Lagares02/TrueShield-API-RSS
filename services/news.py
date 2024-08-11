@@ -115,6 +115,11 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                 if (keyword in title_words or
                     keyword in summary_words):
                     match_score += 1
+                    
+            if match_score >= 1:
+                ContextLevel = round(float(match_score / (len(keywords_lower) + len(subjects_lower))), 2)
+            else:
+                ContextLevel = 0.0
 
             # Minimum of 2 matches required for the news to be considered
             if match_score >= 2:
@@ -126,14 +131,13 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     "Summary": news.summary,
                     "BodyText": news.body,
                     "Authors": news.authors,
-                    "TrueLevel": 0.60, # Nivel de veracidad establecido (de 0.00 hasta 1.00)
+                    "TrueLevel": 0.60,
+                    "ContextLevel": ContextLevel,
                     "Type_item": "rss"
                 })
 
         # Sort matched_news by match_score (descending)
         matched_news = sorted(matched_news, key=lambda x: x.get("match_score", 0), reverse=True)
-        
-        print("News: ", matched_news)
 
         return matched_news
 

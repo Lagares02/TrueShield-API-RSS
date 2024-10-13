@@ -1,10 +1,11 @@
-import os
-import time
 import feedparser
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from sqlalchemy.orm import Session
+import time
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.exc import SQLAlchemyError
+from models.models import MainNew, MainRssUrl
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def truncate_string(value, max_length):
     if value and len(value) > max_length:

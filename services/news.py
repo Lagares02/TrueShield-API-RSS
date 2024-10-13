@@ -1,70 +1,86 @@
+import os
+import time
 import feedparser
 from datetime import datetime
-import time
-from sqlalchemy.orm import Session, selectinload
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from models.models import MainNew, MainRssUrl
 
 def truncate_string(value, max_length):
     if value and len(value) > max_length:
         return value[:max_length]
     return value
 
-def buscar_y_guardar_noticias(db: Session):
+def procesar_feed(db: Session, rss_url):
     num_noticias_guardadas = 0
+    feed = feedparser.parse(rss_url.rss)
+    category = rss_url.category
+    print(category)
+    print("num noticias: ", len(feed.entries), " de ", rss_url.rss)
+    for entry in feed.entries:
+        try:
+            # Truncate title, summary, body, and authors if they are too long
+            title = truncate_string(entry.title, 200)
+            summary = truncate_string(
+                getattr(entry, 'description', None) or getattr(entry, 'summary', None) or "", 200)
+            body = truncate_string(getattr(entry, 'body', None) or "", 200)
+            authors = truncate_string(getattr(entry, 'author', None) or getattr(entry, 'creator', None) or "", 200)
+            link = truncate_string(getattr(entry, 'link', None) or "", 200)
+
+            # Verificar si la noticia ya existe en la base de datos
+            existing_news = db.query(MainNew).filter_by(title=title).first()
+            if existing_news:
+                continue
+
+            # Crear un nuevo registro de noticia
+            new_news = MainNew(
+                title=title,
+                summary=summary,
+                body=body,
+                link_article=link,
+                publication_date=datetime.now(),
+                media_id=rss_url.media_id,
+                authors=authors
+            )
+
+            # Verificar si el feed tiene la fecha de actualización (updated_parsed)
+            if hasattr(entry, 'updated_parsed'):
+                new_news.publication_date = datetime.fromtimestamp(time.mktime(entry.updated_parsed))
+
+            # Guardar la nueva noticia en la base de datos
+            db.add(new_news)
+            num_noticias_guardadas += 1
+
+        except (AttributeError, KeyError) as e:
+            print(f"Error: {e}")
+            continue
+
+    return num_noticias_guardadas
+
+def buscar_y_guardar_noticias(db: Session):
+    num_noticias_guardadas_total = 0
+    num_threads = os.cpu_count() * 2
     try:
-        for rss_url in db.query(MainRssUrl).all():
-            feed = feedparser.parse(rss_url.rss)
-            category = rss_url.category
-            print(category)
-            print("num noticias: ", len(feed.entries), " de ", rss_url.rss)
-            for entry in feed.entries:
+        rss_urls = db.query(MainRssUrl).all()
+
+        with ThreadPoolExecutor(max_workers=num_threads) as executor:
+            futures = {executor.submit(procesar_feed, db, rss_url): rss_url for rss_url in rss_urls}
+            for future in as_completed(futures):
                 try:
-                    # Truncate title, summary, body, and authors if they are too long
-                    title = truncate_string(entry.title, 200)
-                    summary = truncate_string(
-                        getattr(entry, 'description', None) or getattr(entry, 'summary', None) or "", 200)
-                    body = truncate_string(getattr(entry, 'body', None) or "", 200)
-                    authors = truncate_string(getattr(entry, 'author', None) or getattr(entry, 'creator', None) or "", 200)
-                    link = truncate_string(getattr(entry, 'link', None) or "", 200)
-
-                    # Verificar si la noticia ya existe en la base de datos
-                    existing_news = db.query(MainNew).filter_by(title=title).first()
-                    if existing_news:
-                        continue
-
-                    # Crear un nuevo registro de noticia
-                    new_news = MainNew(
-                        title=title,
-                        summary=summary,
-                        body=body,
-                        link_article=link,
-                        publication_date=datetime.now(),
-                        media_id=rss_url.media_id,
-                        authors=authors
-                    )
-
-                    # Verificar si el feed tiene la fecha de actualización (updated_parsed)
-                    if hasattr(entry, 'updated_parsed'):
-                        new_news.publication_date = datetime.fromtimestamp(time.mktime(entry.updated_parsed))
-
-                    # Guardar la nueva noticia en la base de datos
-                    db.add(new_news)
-                    num_noticias_guardadas += 1
-
-                except (AttributeError, KeyError) as e:
-                    print(f"Error: {e}")
-                    continue
-
+                    num_noticias_guardadas = future.result()
+                    num_noticias_guardadas_total += num_noticias_guardadas
+                except Exception as e:
+                    print(f"Error procesando el feed: {e}")
+        
         # Hacer commit fuera del bucle para mejorar el rendimiento
         db.commit()
-    
+
     except SQLAlchemyError as e:
         print(f"Error de SQLAlchemy: {e}")
         db.rollback()  # Rollback en caso de error
-        num_noticias_guardadas = 0  # Reiniciar contador si hay errores
-    
-    return num_noticias_guardadas
+        num_noticias_guardadas_total = 0  # Reiniciar contador si hay errores
+
+    return num_noticias_guardadas_total
 
 def get_news_by_category(db: Session):
     categories_news = {}

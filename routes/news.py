@@ -43,12 +43,14 @@ async def news_by_category(db: Session = Depends(get_db)):
 @router.post("/contrasting_rss", response_model=dict)
 async def contrasting(data: dict, db: Session = Depends(get_db)):
     try:
-        Keywords = data.get("keywords")
-        Subjects = data.get("subjects")
-
+        print("recibido!!!")
+        Keywords = data.get("keywords", {}).get("keywords_es", [])
+        Subjects = data.get("subjects", [])
+        prompt = data.get("prompt") # Para la inferencia
+        
         matched_news = contrasting_rss(db, Keywords, Subjects)
 
-        return {"News": matched_news}
+        return {"Rss": matched_news}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -73,7 +75,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
             items = contrasting_rss(db, Keywords, Subjects)
             
             return {
-                "item": items
+                "Rss": items
             }
         
     except Exception as e:

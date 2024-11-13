@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models.models import MainNew, MainRssUrl
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import random
 
 def truncate_string(value, max_length):
     if value and len(value) > max_length:
@@ -134,10 +135,10 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     match_score += 1
                     
             if match_score >= 1:
-                ContextLevel = round(float(match_score / (len(keywords_lower) + len(subjects_lower))), 2)
+                Domain = round(float(match_score / (len(keywords_lower) + len(subjects_lower))), 2)
             else:
-                ContextLevel = 0.0
-
+                Domain = 0.0
+            
             # Minimum of 2 matches required for the news to be considered
             if match_score >= 2:
                 matched_news.append({
@@ -148,13 +149,16 @@ def contrasting_rss(db: Session, keywords = [], subjects = []):
                     "Summary": news.summary,
                     "BodyText": news.body,
                     "Authors": news.authors,
-                    "TrueLevel": 0.60,
-                    "ContextLevel": ContextLevel,
-                    "Type_item": "rss"
+                    "Confidence": 0.60,
+                    "Domain": Domain,
+                    "Inference": random.choice(["affirmation", "assumption", "denial"]),
+                    "Type_item": "Rss"
                 })
-
+        
         # Sort matched_news by match_score (descending)
         matched_news = sorted(matched_news, key=lambda x: x.get("match_score", 0), reverse=True)
+        
+        print(matched_news)
 
         return matched_news
 
